@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}FastX - Sign Up{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <h1>Welcome to FastX</h1>
+    <div class="signup-box">
+        <h2>Sign Up</h2>
+        <p class="login-text">Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('auth.signup') }}">
+            <div class="form-group">
+                <input type="text" name="name" placeholder="Enter your name" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Enter email address" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="tel" name="phone" placeholder="Enter phone number (e.g., 01712345678)" 
+                       pattern="[0-9]{11}" title="Please enter a valid 11-digit phone number" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Enter password" required>
+            </div>
+            
+            <div class="form-group">
+                <select name="user_type" id="user_type" required>
+                    <option value="individual">Individual</option>
+                    <option value="business">Business</option>
+                </select>
+            </div>
+            
+            <div class="form-group business-name" style="display: none;">
+                <input type="text" name="business_name" placeholder="Enter business name">
+            </div>
+            
+            <button type="submit" class="signup-btn">SIGN UP</button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('user_type').addEventListener('change', function() {
+    var businessNameField = document.querySelector('.business-name');
+    if (this.value === 'business') {
+        businessNameField.style.display = 'block';
+    } else {
+        businessNameField.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
