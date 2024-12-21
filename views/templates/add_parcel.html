@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+
+{% block title %}Add Parcel{% endblock %}
+
+{% block content %}
+<div class="add-parcel">
+    <div class="back-button" onclick="window.location.href='{{ url_for('dashboard.index') }}'">
+        <i class="fas fa-arrow-left"></i> Back
+    </div>
+
+    <form id="parcelForm" method="POST">
+        <div class="section">
+            <h2>Pick up Point Information</h2>
+            <div class="form-group">
+                <label for="pickup_area">Pick up Area</label>
+                <select id="pickup_area" name="pickup_area" required>
+                    <option value="">Select District</option>
+                    {% for district in districts %}
+                    <option value="{{ district }}">{{ district }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="pickup_name">Name</label>
+                <input type="text" id="pickup_name" name="pickup_name" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group half">
+                    <label for="pickup_house">House No</label>
+                    <input type="text" id="pickup_house" name="pickup_house" required>
+                </div>
+                <div class="form-group half">
+                    <label for="pickup_street">Street No</label>
+                    <input type="text" id="pickup_street" name="pickup_street" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="pickup_address">Detailed Address</label>
+                <input type="text" id="pickup_address" name="pickup_address" 
+                       placeholder="46,11 Dhanmondi, dhaka 1207" required>
+            </div>
+
+            <div class="form-group">
+                <label for="pickup_contact">Contact Number</label>
+                <input type="tel" id="pickup_contact" name="pickup_contact" 
+                       placeholder="01712345678" pattern="[0-9]{11}" required>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+            <h2>Drop off Point Information</h2>
+            <div class="form-group">
+                <label for="dropoff_area">Drop off Area</label>
+                <select id="dropoff_area" name="dropoff_area" required>
+                    <option value="">Select District</option>
+                    {% for district in districts %}
+                    <option value="{{ district }}">{{ district }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="dropoff_name">Name</label>
+                <input type="text" id="dropoff_name" name="dropoff_name" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group half">
+                    <label for="dropoff_house">House No</label>
+                    <input type="text" id="dropoff_house" name="dropoff_house" required>
+                </div>
+                <div class="form-group half">
+                    <label for="dropoff_street">Street No</label>
+                    <input type="text" id="dropoff_street" name="dropoff_street" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="dropoff_address">Detailed Address</label>
+                <input type="text" id="dropoff_address" name="dropoff_address" 
+                       placeholder="46,11 Dhanmondi, dhaka 1207" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dropoff_contact">Contact Number</label>
+                <input type="tel" id="dropoff_contact" name="dropoff_contact" 
+                       placeholder="01712345678" pattern="[0-9]{11}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="invoice_number">Invoice Number</label>
+                <input type="text" id="invoice_number" name="invoice_number" required>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Parcel Information</h2>
+            <div class="form-group">
+                <label for="weight">Weight (kg)</label>
+                <input type="number" id="weight" name="weight" step="0.1" required>
+            </div>
+
+            <div class="form-group checkbox">
+                <input type="checkbox" id="fragile" name="fragile">
+                <label for="fragile">Fragile</label>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Amount to be Paid (৳)</label>
+                <input type="number" id="amount" name="amount" required>
+            </div>
+
+            <div class="form-group">
+                <label for="instructions">Delivery Instructions</label>
+                <textarea id="instructions" name="instructions" rows="3"></textarea>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Confirm</button>
+    </form>
+</div>
+
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <h3>Success!</h3>
+        <p>Parcel added successfully</p>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .add-parcel {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 40px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 24px;
+        margin-bottom: 30px;
+        cursor: pointer;
+        color: #6f42c1;
+        font-size: 1.2em;
+        transition: color 0.3s ease;
+    }
+
+    .back-button:hover {
+        color: #553098;
+    }
+
+    .back-button i {
+        margin-right: 10px;
+    }
+
+    .section {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .section h2 {
+        color: #333;
+        font-size: 1.8em;
+        margin-bottom: 30px;
+    }
+
+    .divider {
+        height: 3px;
+        background: #6f42c1;
+        margin: 40px 0;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 25px;
+    }
+
+    .half {
+        flex: 1;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 1.1em;
+        font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="number"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1.1em;
+        transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="tel"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #6f42c1;
+        outline: none;
+    }
+
+    .checkbox {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.1em;
+    }
+
+    .checkbox input {
+        width: 20px;
+        height: 20px;
+    }
+
+    .submit-btn {
+        background: #6f42c1;
+        color: white;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.2em;
+        width: 100%;
+        margin-top: 30px;
+        transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background: #553098;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        min-width: 400px;
+    }
+
+    .modal-content h3 {
+        font-size: 1.8em;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .modal-content p {
+        font-size: 1.2em;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .modal-content button {
+        background: #6f42c1;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.1em;
+        transition: background-color 0.3s ease;
+    }
+
+    .modal-content button:hover {
+        background: #553098;
+    }
+
+    @media (max-width: 768px) {
+        .add-parcel {
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 20px;
+        }
+
+        .form-row {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showModal() {
+    document.getElementById('successModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('successModal').style.display = 'none';
+    window.location.href = '{{ url_for('dashboard.index') }}';
+}
+
+document.getElementById('parcelForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    showModal();
+});
+</script>
+{% endblock %}

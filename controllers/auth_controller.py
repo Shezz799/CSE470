@@ -4,13 +4,13 @@ from models.user import User, Customer, Admin
 from models.database import db
 from views.auth_views import AuthViews
 
-# Create blueprint
+
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard.index'))
         
     if request.method == 'POST':
         email = request.form.get('email')
@@ -24,27 +24,28 @@ def login():
             return redirect(url_for('auth.login'))
         
         login_user(user, remember=remember)
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard.index'))
     
     return AuthViews.render_login()
 
 @auth_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard.index'))
         
     if request.method == 'POST':
         email = request.form.get('email')
         name = request.form.get('name')
-        phone = request.form.get('phone')  # Get phone number
+        phone = request.form.get('phone')
         password = request.form.get('password')
         user_type = request.form.get('user_type')
         business_name = request.form.get('business_name')
         
-        # Validate phone number (basic validation)
+
         if not phone or len(phone) < 10:
             flash('Please enter a valid phone number', 'error')
             return redirect(url_for('auth.signup'))
+        
         
         user = User.query.filter_by(email=email).first()
         if user:
@@ -57,8 +58,9 @@ def signup():
         
         new_user = Customer(
             email=email,
-            name=name,
-            phone=phone,  # Add phone number
+            username=name,
+            phone=phone,
+            customer_type=user_type,
             business_name=business_name if user_type == 'business' else None
         )
         new_user.set_password(password)

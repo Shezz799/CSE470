@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block content %}
+<div class="account-settings">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="back-button" onclick="window.location.href='{{ url_for('dashboard.index') }}'">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </div>
+
+    <div class="settings-container">
+        <h1>Account Settings</h1>
+        
+        <form method="POST" class="settings-form">
+            <div class="form-section">
+                <h2>Personal Information</h2>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" value="{{ current_user.phone }}" 
+                           pattern="[0-9]{11}" placeholder="01712345678" required>
+                </div>
+
+                {% if current_user.type == 'customer' and current_user.customer_type == 'business' %}
+                <div class="form-group">
+                    <label for="business_name">Business Name</label>
+                    <input type="text" id="business_name" name="business_name" 
+                           value="{{ current_user.business_name }}">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-section">
+                <h2>Change Password</h2>
+                <div class="form-group">
+                    <label for="current_password">Current Password</label>
+                    <input type="password" id="current_password" name="current_password">
+                </div>
+
+                <div class="form-group">
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm New Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password">
+                </div>
+            </div>
+
+            <button type="submit" class="save-btn">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <h3>Success!</h3>
+        <p>Your account settings have been updated successfully.</p>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        font-size: 1.1em;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .account-settings {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 40px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 24px;
+        margin-bottom: 30px;
+        cursor: pointer;
+        color: #6f42c1;
+        font-size: 1.2em;
+        transition: color 0.3s ease;
+    }
+
+    .back-button:hover {
+        color: #553098;
+    }
+
+    .back-button i {
+        margin-right: 10px;
+    }
+
+    .settings-container {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .settings-container h1 {
+        color: #333;
+        font-size: 2em;
+        margin-bottom: 40px;
+    }
+
+    .form-section {
+        margin-bottom: 40px;
+    }
+
+    .form-section h2 {
+        color: #333;
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #6f42c1;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 1.1em;
+        font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1.1em;
+        transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+        border-color: #6f42c1;
+        outline: none;
+    }
+
+    .save-btn {
+        background: #6f42c1;
+        color: white;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.2em;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    .save-btn:hover {
+        background: #553098;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        min-width: 400px;
+    }
+
+    .modal-content h3 {
+        font-size: 1.8em;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .modal-content p {
+        font-size: 1.2em;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .modal-content button {
+        background: #6f42c1;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.1em;
+        transition: background-color 0.3s ease;
+    }
+
+    .modal-content button:hover {
+        background: #553098;
+    }
+
+    @media (max-width: 768px) {
+        .account-settings {
+            padding: 0 20px;
+        }
+
+        .settings-container {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showModal() {
+    document.getElementById('successModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('successModal').style.display = 'none';
+    window.location.href = '{{ url_for('dashboard.index') }}';
+}
+
+document.querySelector('.settings-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    showModal();
+});
+</script>
+{% endblock %}

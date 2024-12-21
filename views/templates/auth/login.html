@@ -18,7 +18,246 @@
         {% endwith %}
         
         <form method="POST" action="{{ url_for('auth.login') }}">
-            <div class="form-group">
+        {% extends "base.html" %}
+        
+        {% block title %}Add Parcel{% endblock %}
+        
+        {% block content %}
+        <div class="add-parcel">
+            <div class="back-button" onclick="window.location.href='{{ url_for('dashboard.index') }}'">
+                <i class="fas fa-arrow-left"></i> Back
+            </div>
+        
+            <form id="parcelForm" method="POST">
+      
+                <div class="section">
+                    <h2>Pick up Point Information</h2>
+                    {{ ... }}
+                </div>
+        
+       
+                <div class="section">
+                    <h2>Drop off Point Information</h2>
+                    {{ ... }}
+                </div>
+        
+      
+                <div class="section">
+                    <h2>Additional Information</h2>
+                    {{ ... }}
+                </div>
+        
+                <button type="submit" class="submit-btn">Submit</button>
+            </form>
+        </div>
+        
+
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <h3>Success!</h3>
+                <p>Your parcel request has been submitted successfully.</p>
+                <button onclick="closeModal()">Close</button>
+            </div>
+        </div>
+        {% endblock %}
+        
+        {% block extra_css %}
+        {{ ... }}
+        {% endblock %}
+        
+        {% block extra_js %}
+        <script>
+        function showModal() {
+            document.getElementById('successModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+            window.location.href = '{{ url_for('dashboard.index') }}';
+        }
+        
+        document.getElementById('parcelForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showModal();
+        });
+        </script>
+        {% endblock %}{{ ... }}
+        <div class="account-settings">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="back-button" onclick="window.location.href='{{ url_for('dashboard.index') }}'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </div>
+        
+            <div class="settings-container">
+                {{ ... }}
+            </div>
+        </div>
+        
+
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <h3>Success!</h3>
+                <p>Your account settings have been updated successfully.</p>
+                <button onclick="closeModal()">Close</button>
+            </div>
+        </div>
+        {{ ... }}
+        
+        {% block extra_js %}
+        <script>
+        function showModal() {
+            document.getElementById('successModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+            window.location.href = '{{ url_for('dashboard.index') }}';
+        }
+        
+        document.querySelector('.settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+      
+            showModal();
+        });
+        </script>
+        {% endblock %}{{ ... }}
+        <div class="account-settings">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="back-button" onclick="window.location.href='{{ url_for('dashboard.index') }}'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </div>
+        
+            <div class="settings-container">
+                {{ ... }}
+            </div>
+        </div>
+        
+ 
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <h3>Success!</h3>
+                <p>Your account settings have been updated successfully.</p>
+                <button onclick="closeModal()">Close</button>
+            </div>
+        </div>
+        {{ ... }}
+        
+        {% block extra_js %}
+        <script>
+        function showModal() {
+            document.getElementById('successModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+            window.location.href = '{{ url_for('dashboard.index') }}';
+        }
+        
+        document.querySelector('.settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+     
+            showModal();
+        });
+        </script>
+        {% endblock %}{% extends "base.html" %}
+        
+        {% block title %}Dashboard{% endblock %}
+        
+        {% block content %}
+        <div class="dashboard">
+            <div class="top-bar">
+                <div class="user-info">
+                    <i class="fas fa-user fa-lg"></i>
+                    <span>{{ current_user.username }}</span>
+                </div>
+                <div class="settings dropdown">
+                    <i class="fas fa-cog fa-lg" onclick="toggleDropdown()"></i>
+                    <div class="dropdown-content" id="settingsDropdown">
+                        <a href="{{ url_for('dashboard.account_settings') }}">
+                            <i class="fas fa-user-cog"></i> Account Settings
+                        </a>
+                        <a href="{{ url_for('auth.logout') }}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dashboard-content">
+                <h1>Welcome to FastX</h1>
+                <div class="dashboard-cards">
+   
+                    <div class="card" onclick="window.location.href='{{ url_for('dashboard.add_parcel') }}'">
+                        <div class="card-icon">
+                            <i class="fas fa-box fa-2x"></i>
+                        </div>
+                        <h2>Request Parcel Delivery</h2>
+                        <p>Create a new parcel delivery request</p>
+                    </div>
+                    
+   
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-truck fa-2x"></i>
+                        </div>
+                        <h2>View Parcel Updates</h2>
+                        <p>Track your parcel delivery status</p>
+                    </div>
+                    
+          
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-money-bill-wave fa-2x"></i>
+                        </div>
+                        <h2>View Payment Updates</h2>
+                        <p>Check your payment history and status</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+        
+        {% block extra_css %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <style>
+            {{ ... }}
+        </style>
+        {% endblock %}
+        
+        {% block extra_js %}
+        <script>
+        function toggleDropdown() {
+            document.getElementById("settingsDropdown").classList.toggle("show");
+        }
+        
+ 
+        window.onclick = function(event) {
+            if (!event.target.matches('.fa-cog')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+        </script>
+        {% endblock %}    <div class="form-group">
                 <input type="email" name="email" placeholder="Enter email address" required>
             </div>
             

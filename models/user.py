@@ -8,9 +8,9 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    phone = db.Column(db.String(20), nullable=False)  # Adding phone number field
+    phone = db.Column(db.String(20), nullable=False)
     password_hash = db.Column(db.String(128))
-    type = db.Column(db.String(50))  # This will store the user type
+    type = db.Column(db.String(50))
     
     __mapper_args__ = {
         'polymorphic_identity': 'user',
@@ -27,7 +27,7 @@ class Customer(User):
     __tablename__ = 'customers'
     
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    customer_type = db.Column(db.String(20), nullable=False)  # 'regular' or 'business'
+    customer_type = db.Column(db.String(20), nullable=False)
     business_name = db.Column(db.String(100))
     
     __mapper_args__ = {
@@ -54,6 +54,8 @@ class Admin(User):
     __mapper_args__ = {
         'polymorphic_identity': 'admin',
     }
+    
+
     
     @staticmethod
     def create_admin():
