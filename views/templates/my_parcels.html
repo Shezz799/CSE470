@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}My Parcels{% endblock %}
+
+{% block content %}
+<div class="my-parcels">
+    <div class="back-button" onclick="window.location.href='{{ url_for('dashboard.index') }}'">
+        <i class="fas fa-arrow-left"></i> Back
+    </div>
+
+    <h1>My Parcels</h1>
+
+    <div class="delivery-stats">
+        <div class="stat-card completed">
+            <div class="number">{{ completed_deliveries }}</div>
+            <div class="label">Completed Deliveries</div>
+        </div>
+        <div class="stat-card processing">
+            <div class="number">{{ processing_deliveries }}</div>
+            <div class="label">Processing Deliveries</div>
+        </div>
+        <div class="stat-card cancelled">
+            <div class="number">{{ cancelled_deliveries }}</div>
+            <div class="label">Cancelled Deliveries</div>
+        </div>
+    </div>
+
+    <div class="parcels-list">
+        {% if parcels %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Invoice Number</th>
+                        <th>Pickup Location</th>
+                        <th>Delivery Location</th>
+                        <th>Amount</th>
+                        <th>Created Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for parcel in parcels %}
+                    <tr>
+                        <td>{{ parcel.invoice_number }}</td>
+                        <td>
+                            {{ parcel.pickup_name }}<br>
+                            {{ parcel.pickup_address }}<br>
+                            {{ parcel.pickup_area }}
+                        </td>
+                        <td>
+                            {{ parcel.dropoff_name }}<br>
+                            {{ parcel.dropoff_address }}<br>
+                            {{ parcel.dropoff_area }}
+                        </td>
+                        <td>৳{{ "{:,.2f}".format(parcel.amount) }}</td>
+                        <td>{{ parcel.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td class="status {{ parcel.status }}">
+                            {{ parcel.status_display }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-parcels">
+                <p>You haven't created any parcels yet.</p>
+                <a href="{{ url_for('parcel.add_parcel') }}" class="add-parcel-btn">Create New Parcel</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    .my-parcels {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 40px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 24px;
+        margin-bottom: 30px;
+        cursor: pointer;
+        color: #6f42c1;
+        font-size: 1.2em;
+        transition: color 0.3s ease;
+    }
+
+    .back-button:hover {
+        color: #553098;
+    }
+
+    .back-button i {
+        margin-right: 10px;
+    }
+
+    h1 {
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 2em;
+    }
+
+    .delivery-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .stat-card .number {
+        font-size: 2.5em;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .stat-card .label {
+        color: #666;
+        font-size: 1.1em;
+    }
+
+    .stat-card.completed {
+        background-color: #e6f4ea;
+    }
+
+    .stat-card.completed .number {
+        color: #28a745;
+    }
+
+    .stat-card.processing {
+        background-color: #fff8e6;
+    }
+
+    .stat-card.processing .number {
+        color: #ffc107;
+    }
+
+    .stat-card.cancelled {
+        background-color: #fef3f2;
+    }
+
+    .stat-card.cancelled .number {
+        color: #dc3545;
+    }
+
+    .parcels-list {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        background-color: #f8f9fa;
+        color: #555;
+        font-weight: 600;
+    }
+
+    td {
+        color: #666;
+    }
+
+    .status {
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+
+    .status.delivered {
+        color: #28a745;
+        background-color: #e6f4ea;
+    }
+
+    .status.processing, .status.pending, .status.picked_up, .status.in_transit {
+        color: #ffc107;
+        background-color: #fff8e6;
+    }
+
+    .status.cancelled {
+        color: #dc3545;
+        background-color: #fef3f2;
+    }
+
+    .no-parcels {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+    .add-parcel-btn {
+        display: inline-block;
+        background: #6f42c1;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+    }
+
+    .add-parcel-btn:hover {
+        background: #553098;
+        color: white;
+        text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .my-parcels {
+            padding: 0 20px;
+        }
+
+        .delivery-stats {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        table {
+            display: block;
+            overflow-x: auto;
+        }
+
+        th, td {
+            white-space: nowrap;
+        }
+    }
+</style>
+{% endblock %}

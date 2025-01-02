@@ -1,66 +1,64 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
-from werkzeug.security import check_password_hash, generate_password_hash
 from models.database import db
 from models.user import User
+from werkzeug.security import check_password_hash, generate_password_hash
+from constants import DISTRICTS
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
-DISTRICTS = [
-    "Dhaka", "Faridpur", "Gazipur", "Gopalganj", "Jamalpur", "Kishoreganj",
-    "Madaripur", "Manikganj", "Munshiganj", "Mymensingh", "Narayanganj",
-    "Narsingdi", "Netrokona", "Rajbari", "Shariatpur", "Sherpur", "Tangail",
-    "Bogra", "Joypurhat", "Naogaon", "Natore", "Nawabganj", "Pabna",
-    "Rajshahi", "Sirajgonj", "Dinajpur", "Gaibandha", "Kurigram",
-    "Lalmonirhat", "Nilphamari", "Panchagarh", "Rangpur", "Thakurgaon",
-    "Barguna", "Barisal", "Bhola", "Jhalokati", "Patuakhali", "Pirojpur",
-    "Bandarban", "Brahmanbaria", "Chandpur", "Chittagong", "Comilla",
-    "Cox's Bazar", "Feni", "Khagrachari", "Lakshmipur", "Noakhali",
-    "Rangamati", "Habiganj", "Maulvibazar", "Sunamganj", "Sylhet",
-    "Bagerhat", "Chuadanga", "Jessore", "Jhenaidah", "Khulna", "Kushtia",
-    "Magura", "Meherpur", "Narail", "Satkhira"
-]
-
-@dashboard_bp.route('/dashboard')
+@dashboard_bp.route('/')
 @login_required
 def index():
     return render_template('dashboard.html')
 
-@dashboard_bp.route('/add-parcel')
-@login_required
-def add_parcel():
-    return render_template('add_parcel.html', districts=DISTRICTS)
-
-@dashboard_bp.route('/account-settings', methods=['GET', 'POST'])
+@dashboard_bp.route('/account_settings', methods=['GET', 'POST'])
 @login_required
 def account_settings():
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        current_password = request.form.get('current_password')
-        new_password = request.form.get('new_password')
-        business_name = request.form.get('business_name')
+        try:
 
-        if not phone or len(phone) != 11:
-            flash('Please enter a valid phone number', 'error')
-            return redirect(url_for('dashboard.account_settings'))
+            username = request.form.get('username')
+            email = request.form.get('email')
+            phone = request.form.get('phone')
+            business_name = request.form.get('business_name')
+            current_password = request.form.get('current_password')
+            new_password = request.form.get('new_password')
+            
 
-        current_user.username = username
-        current_user.email = email
-        current_user.phone = phone
+            pickup_area = request.form.get('pickup_area')
+            pickup_house = request.form.get('pickup_house')
+            pickup_street = request.form.get('pickup_street')
+            pickup_address = request.form.get('pickup_address')
 
-        if hasattr(current_user, 'customer_type') and current_user.customer_type == 'business':
-            current_user.business_name = business_name
+ 
+            user = User.query.get(current_user.id)
+            user.username = username
+            user.email = email
+            user.phone = phone
+            
+            if business_name and current_user.type == 'customer' and current_user.customer_type == 'business':
+                user.business_name = business_name
 
-        if current_password and new_password:
-            if not check_password_hash(current_user.password_hash, current_password):
-                flash('Current password is incorrect', 'error')
-                return redirect(url_for('dashboard.account_settings'))
-            current_user.set_password(new_password)
 
-        db.session.commit()
-        flash('Account settings updated successfully', 'success')
-        return redirect(url_for('dashboard.account_settings'))
+            user.pickup_area = pickup_area
+            user.pickup_house = pickup_house
+            user.pickup_street = pickup_street
+            user.pickup_address = pickup_address
 
-    return render_template('account_settings.html')
+
+            if current_password and new_password:
+                if not check_password_hash(user.password, current_password):
+                    return jsonify({'error': 'Current password is incorrect'}), 400
+                user.password = generate_password_hash(new_password)
+
+            db.session.commit()
+            return jsonify({'success': True})
+            
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': str(e)}), 500
+
+
+
+    return render_template('account_settings.html', districts=DISTRICTS)

@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Updates{% endblock %}
+
+{% block content %}
+<div class="payment-updates">
+    <div class="back-button" onclick="window.location.href='{{ url_for('dashboard.index') }}'">
+        <i class="fas fa-arrow-left"></i> Back
+    </div>
+
+    <h1>Payment Updates</h1>
+
+    <div class="payment-summary">
+        <div class="summary-card paid">
+            <div class="amount">৳{{ "{:,.2f}".format(total_paid) }}</div>
+            <div class="label">Total Paid</div>
+        </div>
+        <div class="summary-card unpaid">
+            <div class="amount">৳{{ "{:,.2f}".format(total_unpaid) }}</div>
+            <div class="label">Total Unpaid</div>
+        </div>
+    </div>
+
+    <div class="pending-payments">
+        <h2>Pending Payments</h2>
+        
+        {% if pending_payments %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Invoice Number</th>
+                        <th>Delivery Status</th>
+                        <th>Created Date</th>
+                        <th>Amount</th>
+                        <th>Payment Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for parcel in pending_payments %}
+                    <tr>
+                        <td>{{ parcel.invoice_number }}</td>
+                        <td class="status {{ 'delivered' if parcel.status == 'delivered' else 'processing' }}">
+                            {{ parcel.status_display }}
+                        </td>
+                        <td>{{ parcel.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td class="amount">৳{{ "{:,.2f}".format(parcel.amount) }}</td>
+                        <td class="payment-status">{{ parcel.payment_status_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-payments">
+                <p>You have no pending payments.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    .payment-updates {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 40px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 24px;
+        margin-bottom: 30px;
+        cursor: pointer;
+        color: #6f42c1;
+        font-size: 1.2em;
+        transition: color 0.3s ease;
+    }
+
+    .back-button:hover {
+        color: #553098;
+    }
+
+    .back-button i {
+        margin-right: 10px;
+    }
+
+    h1 {
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 2em;
+    }
+
+    h2 {
+        color: #333;
+        margin: 40px 0 20px;
+        font-size: 1.5em;
+    }
+
+    .payment-summary {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        margin-top: 20px;
+    }
+
+    .summary-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .summary-card.paid {
+        background-color: #e6f4ea;
+    }
+
+    .summary-card.unpaid {
+        background-color: #fef3f2;
+    }
+
+    .summary-card .amount {
+        font-size: 2.5em;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .summary-card.paid .amount {
+        color: #28a745;
+    }
+
+    .summary-card.unpaid .amount {
+        color: #dc3545;
+    }
+
+    .summary-card .label {
+        color: #666;
+        font-size: 1.1em;
+    }
+
+    .pending-payments {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin-top: 30px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        background-color: #f8f9fa;
+        color: #555;
+        font-weight: 600;
+    }
+
+    td {
+        color: #666;
+    }
+
+    .status {
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+
+    .status.delivered {
+        color: #28a745;
+        background-color: #e6f4ea;
+    }
+
+    .status.processing {
+        color: #ffc107;
+        background-color: #fff8e6;
+    }
+
+    .payment-status {
+        color: #dc3545;
+        font-weight: 600;
+    }
+
+    td.amount {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .no-payments {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .payment-updates {
+            padding: 0 20px;
+        }
+
+        .payment-summary {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        table {
+            display: block;
+            overflow-x: auto;
+        }
+
+        th, td {
+            white-space: nowrap;
+        }
+    }
+</style>
+{% endblock %}

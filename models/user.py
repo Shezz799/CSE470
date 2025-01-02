@@ -30,18 +30,31 @@ class Customer(User):
     customer_type = db.Column(db.String(20), nullable=False)
     business_name = db.Column(db.String(100))
     
+    pickup_district = db.Column(db.String(100), nullable=False)
+    pickup_name = db.Column(db.String(100), nullable=False)
+    pickup_house = db.Column(db.String(50), nullable=False)
+    pickup_street = db.Column(db.String(50), nullable=False)
+    pickup_detailed_address = db.Column(db.String(200), nullable=False)
+    
     __mapper_args__ = {
         'polymorphic_identity': 'customer',
     }
     
     @staticmethod
-    def create_customer(username, email, phone, password, customer_type, business_name=None):
+    def create_customer(username, email, phone, password, customer_type, 
+                       pickup_district, pickup_name, pickup_house, pickup_street, 
+                       pickup_detailed_address, business_name=None):
         customer = Customer(
             username=username,
             email=email,
             phone=phone,
             customer_type=customer_type,
-            business_name=business_name
+            business_name=business_name,
+            pickup_district=pickup_district,
+            pickup_name=pickup_name,
+            pickup_house=pickup_house,
+            pickup_street=pickup_street,
+            pickup_detailed_address=pickup_detailed_address
         )
         customer.set_password(password)
         return customer
@@ -55,17 +68,12 @@ class Admin(User):
         'polymorphic_identity': 'admin',
     }
     
-
-    
     @staticmethod
-    def create_admin():
-        admin = Admin.query.filter_by(email='shehzadhakim799@gmail.com').first()
-        if not admin:
-            admin = Admin(
-                username='FastX ADMIN',
-                email='shehzadhakim799@gmail.com',
-                phone='admin'
-            )
-            admin.set_password('shehzadhakim@@@')
-            db.session.add(admin)
-            db.session.commit()
+    def create_admin(username, email, password, phone):
+        admin = Admin(
+            username=username,
+            email=email,
+            phone=phone
+        )
+        admin.set_password(password)
+        return admin
